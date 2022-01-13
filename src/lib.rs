@@ -1,4 +1,5 @@
 mod set1;
+mod set2;
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -104,6 +105,13 @@ mod tests {
         assert_eq!(
             test_output,
             set1::challenge8::detect_aes_in_ecb_mode(test_input)
+        )
+    }
+    #[test]
+    fn pkcs7_padding_test() {
+        assert_eq!(
+            "YELLOW SUBMARINE\x04\x04\x04\x04",
+            set2::challenge9::pkcs7_padding("YELLOW SUBMARINE", 20)
         )
     }
 }

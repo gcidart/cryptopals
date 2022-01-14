@@ -114,4 +114,22 @@ mod tests {
             set2::challenge9::pkcs7_padding("YELLOW SUBMARINE", 20)
         )
     }
+    #[test]
+    fn decrypt_aes128_cbc_test() {
+        use std::fs::File;
+        use std::io::{BufRead, BufReader};
+        let file = File::open("src/txt/s2ch10.txt").expect("no such file");
+        let key = "YELLOW SUBMARINE";
+        let output_file = File::open("src/s1ch6_lyrics.txt").expect("no such file");
+        let buf = BufReader::new(output_file);
+        let test_output: String = buf
+            .lines()
+            .map(|l| l.expect("Could not parse line"))
+            .collect::<Vec<String>>()
+            .join("\n");
+        assert_eq!(
+            test_output,
+            set2::challenge10::decrypt_aes128_cbc(file, key)
+        )
+    }
 }

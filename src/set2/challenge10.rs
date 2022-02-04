@@ -2,7 +2,7 @@ use std::fs::File;
 extern crate openssl;
 use openssl::symm::*;
 
-/// using ecb-decrypt function, decrypt Base64-encoded content in file via AES-128 in CBC mode under the key 
+/// using ecb-decrypt function, decrypt Base64-encoded content in file via AES-128 in CBC mode under the key
 pub fn decrypt_aes128_cbc(file: File, key: &str) -> String {
     use super::super::set1::challenge6;
     let hex_text = challenge6::get_hex_text_from_file(file);
@@ -34,9 +34,12 @@ pub fn decrypt_aes128_cbc(file: File, key: &str) -> String {
                 i += 1;
                 j += 1;
             }
-            output.resize(hex_text_u8.len()-(output[hex_text_u8.len()-1] as usize),0);
+            output.resize(
+                hex_text_u8.len() - (output[hex_text_u8.len() - 1] as usize),
+                0,
+            );
             String::from_utf8(output).unwrap()
-        },
+        }
         Err(_) => String::new(),
     }
 }

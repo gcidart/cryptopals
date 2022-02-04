@@ -1,5 +1,9 @@
 mod set1;
 mod set2;
+
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -30,8 +34,6 @@ mod tests {
     }
     #[test]
     fn detect_single_character_xor_test() {
-        use std::fs::File;
-        use std::io::{BufRead, BufReader};
         let file = File::open("src/s1ch4.txt").expect("no such file");
         let buf = BufReader::new(file);
         let test_input = buf
@@ -64,8 +66,6 @@ mod tests {
     }
     #[test]
     fn break_repeating_key_xor_test() {
-        use std::fs::File;
-        use std::io::{BufRead, BufReader};
         let file = File::open("src/s1ch6.txt").expect("no such file");
         let output_file = File::open("src/s1ch6_lyrics.txt").expect("no such file");
         let buf = BufReader::new(output_file);
@@ -78,8 +78,6 @@ mod tests {
     }
     #[test]
     fn decrypt_aes128_ecb_test() {
-        use std::fs::File;
-        use std::io::{BufRead, BufReader};
         let file = File::open("src/s1ch7.txt").expect("no such file");
         let key = "YELLOW SUBMARINE";
         let output_file = File::open("src/s1ch6_lyrics.txt").expect("no such file");
@@ -93,8 +91,6 @@ mod tests {
     }
     #[test]
     fn detect_aes_in_ecb_mode_test() {
-        use std::fs::File;
-        use std::io::{BufRead, BufReader};
         let file = File::open("src/s1ch8.txt").expect("no such file");
         let buf = BufReader::new(file);
         let test_input = buf
@@ -116,8 +112,6 @@ mod tests {
     }
     #[test]
     fn decrypt_aes128_cbc_test() {
-        use std::fs::File;
-        use std::io::{BufRead, BufReader};
         let file = File::open("src/txt/s2ch10.txt").expect("no such file");
         let key = "YELLOW SUBMARINE";
         let output_file = File::open("src/s1ch6_lyrics.txt").expect("no such file");
@@ -131,5 +125,51 @@ mod tests {
             test_output,
             set2::challenge10::decrypt_aes128_cbc(file, key)
         )
+    }
+    #[test]
+    fn encrypt_aes128_ecb_test() {
+        let file = File::open("src/s1ch6_lyrics.txt").expect("no such file");
+        let key = "YELLOW SUBMARINE";
+        let output_file = File::open("src/s1ch7.txt").expect("no such file");
+        let buf = BufReader::new(output_file);
+        let test_output: String = buf
+            .lines()
+            .map(|l| l.expect("Could not parse line"))
+            .collect::<Vec<String>>()
+            .join("");
+        assert_eq!(
+            test_output,
+            set2::challenge11::encrypt_aes128_ecb(file, key)
+        )
+    }
+    #[test]
+    fn encrypt_aes128_cbc_test() {
+        let file = File::open("src/s1ch6_lyrics.txt").expect("no such file");
+        let key = "YELLOW SUBMARINE";
+        let output_file = File::open("src/txt/s2ch10.txt").expect("no such file");
+        let buf = BufReader::new(output_file);
+        let test_output: String = buf
+            .lines()
+            .map(|l| l.expect("Could not parse line"))
+            .collect::<Vec<String>>()
+            .join("");
+        assert_eq!(
+            test_output,
+            set2::challenge11::encrypt_aes128_cbc(file, key)
+        )
+    }
+    #[test]
+    fn detect_encryption_mode_test() {
+        let mut input = String::with_capacity(96);
+        for _ in 0..96 {
+            input.push('A')
+        }
+        for _ in 0..10 {
+            let (encrypted_text, choice) = set2::challenge11::encryption_oracle(&input);
+            assert_eq!(
+                choice,
+                set2::challenge11::detect_encryption_mode(&encrypted_text)
+            )
+        }
     }
 }

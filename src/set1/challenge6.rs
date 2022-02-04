@@ -97,6 +97,17 @@ pub fn hamming_distance(string1: &str, string2: &str) -> u32 {
 
 /// Read base64 encoded text from file and return hex string
 pub fn get_hex_text_from_file(file: File) -> String {
+    let buf = BufReader::new(file);
+    let test_input: String = buf
+        .lines()
+        .map(|l| l.expect("Could not parse line"))
+        .collect::<Vec<String>>()
+        .join("");
+    base64_to_hex(&test_input)
+}
+
+/// convert base64 to hex
+pub fn base64_to_hex(base64_text: &str) -> String {
     let hex_alphabet: Vec<char> = "0123456789abcdef".chars().collect();
     let base64_alphabet: Vec<char> =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
@@ -109,14 +120,8 @@ pub fn get_hex_text_from_file(file: File) -> String {
         i += 1;
     }
     base64_hex_map.insert('=', 0);
-    let buf = BufReader::new(file);
-    let test_input: String = buf
-        .lines()
-        .map(|l| l.expect("Could not parse line"))
-        .collect::<Vec<String>>()
-        .join("");
-    let mut hex_text = String::with_capacity(2 * test_input.len());
-    let line_chars: Vec<char> = test_input.chars().collect();
+    let mut hex_text = String::with_capacity(2 * base64_text.len());
+    let line_chars: Vec<char> = base64_text.chars().collect();
     let mut index = 0;
     while index + 1 < line_chars.len() {
         let s0 = base64_hex_map.get(&line_chars[index]).unwrap();

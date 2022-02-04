@@ -1,7 +1,6 @@
 /// return the one string in vector of hex-encoded ciphertexts  which is encrypted in ECB mode
 pub fn detect_aes_in_ecb_mode(ciphertexts: Vec<String>) -> String {
-    let mut max_sum_score = 0;
-    let mut max_max_score = 0;
+    let mut max_max_score = 15;
     let mut detected_string = String::new();
     for hex_text in ciphertexts {
         let hex_text_chars: Vec<char> = hex_text.chars().collect();
@@ -18,7 +17,7 @@ pub fn detect_aes_in_ecb_mode(ciphertexts: Vec<String>) -> String {
         while index < hex_text_u8.len() {
             let mut temp = Vec::with_capacity(16);
             let mut i = 0;
-            while i < 16 {
+            while i < 16 && index < hex_text_u8.len() {
                 temp.push(hex_text_u8[index]);
                 i += 1;
                 index += 1;
@@ -26,7 +25,6 @@ pub fn detect_aes_in_ecb_mode(ciphertexts: Vec<String>) -> String {
             split_text.push(temp);
         }
         let mut max_score = 0;
-        let mut sum_score = 0;
         for i in 0..(hex_text_u8.len() / 16) {
             for j in i + 1..(hex_text_u8.len() / 16) {
                 let mut score = 0;
@@ -35,15 +33,10 @@ pub fn detect_aes_in_ecb_mode(ciphertexts: Vec<String>) -> String {
                         score += 1;
                     }
                 }
-                sum_score = sum_score + score;
                 if score > max_score {
                     max_score = score;
                 }
             }
-        }
-
-        if sum_score > max_sum_score {
-            max_sum_score = sum_score;
         }
         if max_score > max_max_score {
             max_max_score = max_score;

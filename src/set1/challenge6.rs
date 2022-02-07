@@ -123,20 +123,31 @@ pub fn base64_to_hex(base64_text: &str) -> String {
     let mut hex_text = String::with_capacity(2 * base64_text.len());
     let line_chars: Vec<char> = base64_text.chars().collect();
     let mut index = 0;
-    while index + 1 < line_chars.len() {
+    while index + 3 < line_chars.len() {
         let s0 = base64_hex_map.get(&line_chars[index]).unwrap();
         let s1 = base64_hex_map.get(&line_chars[index + 1]).unwrap();
+        let s2 = base64_hex_map.get(&line_chars[index + 2]).unwrap();
+        let s3 = base64_hex_map.get(&line_chars[index + 3]).unwrap();
         let b3 = s0 << 6 | s1;
         let nibble0 = b3 >> 8;
         let nibble1 = (b3 >> 4) & 0xf;
         let nibble2 = b3 & 0xf;
+        let b3 = s2 << 6 | s3;
         hex_text.push(hex_alphabet[nibble0 as usize]);
         hex_text.push(hex_alphabet[nibble1 as usize]);
         // Account for padding character
-        if line_chars[index + 1] != '=' {
+        if line_chars[index + 2] != '=' {
             hex_text.push(hex_alphabet[nibble2 as usize]);
+            let nibble0 = b3 >> 8;
+            let nibble1 = (b3 >> 4) & 0xf;
+            let nibble2 = b3 & 0xf;
+            hex_text.push(hex_alphabet[nibble0 as usize]);
+            if line_chars[index + 3] != '=' {
+                hex_text.push(hex_alphabet[nibble1 as usize]);
+                hex_text.push(hex_alphabet[nibble2 as usize]);
+            }
         }
-        index += 2;
+        index += 4;
     }
     hex_text
 }

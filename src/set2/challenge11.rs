@@ -22,7 +22,6 @@ pub fn encrypt_aes128_ecb(file: File, key: &str) -> String {
 /// encrypt input string via AES-128 in ECB mode under the key
 pub fn encrypt_string_aes128_ecb(input: &str, key: &str) -> String {
     let file_bytes = input.as_bytes();
-
     let cipher = Cipher::aes_128_ecb();
     let mut encrypter = Crypter::new(cipher, Mode::Encrypt, &key.as_bytes(), None).unwrap();
     let mut output = vec![0 as u8; file_bytes.len() + Cipher::aes_128_ecb().block_size()];

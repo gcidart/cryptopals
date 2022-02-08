@@ -179,8 +179,8 @@ mod tests {
         dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg\
         YnkK";
         let hex_input = set1::challenge6::base64_to_hex(base64_input);
-        let hex_chars : Vec<char> = hex_input.chars().collect();
-        let mut hex_bytes : Vec<u8> = Vec::with_capacity(hex_input.len() / 2);
+        let hex_chars: Vec<char> = hex_input.chars().collect();
+        let mut hex_bytes: Vec<u8> = Vec::with_capacity(hex_input.len() / 2);
         let mut index = 0;
         while index + 1 < hex_chars.len() {
             let nibble0 = hex_chars[index].to_digit(16).unwrap();
@@ -193,5 +193,24 @@ mod tests {
             input,
             set2::challenge12::byte_at_a_time_ecb_decryption_simple(&input)
         )
+    }
+    #[test]
+    fn kv_parse_test() {
+        let input = "foo=bar&baz=qux&zap=zazzle";
+        let output = "{\
+          foo: 'bar',\
+          baz: 'qux',\
+          zap: 'zazzle'\
+          }";
+        assert_eq!(output, set2::challenge13::kv_parse(&input))
+    }
+    #[test]
+    fn ecb_cut_and_paste_test() {
+        let output = "{\
+          email: 'crypt@abc.com',\
+          uid: '10',\
+          role: 'admin'\
+          }";
+        assert_eq!(output, set2::challenge13::ecb_cut_and_paste())
     }
 }

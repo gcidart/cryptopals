@@ -213,4 +213,26 @@ mod tests {
           }";
         assert_eq!(output, set2::challenge13::ecb_cut_and_paste())
     }
+    #[test]
+    fn byte_at_a_time_ecb_decryption_hard_test() {
+        let base64_input = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg\
+        aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq\
+        dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg\
+        YnkK";
+        let hex_input = set1::challenge6::base64_to_hex(base64_input);
+        let hex_chars: Vec<char> = hex_input.chars().collect();
+        let mut hex_bytes: Vec<u8> = Vec::with_capacity(hex_input.len() / 2);
+        let mut index = 0;
+        while index + 1 < hex_chars.len() {
+            let nibble0 = hex_chars[index].to_digit(16).unwrap();
+            let nibble1 = hex_chars[index + 1].to_digit(16).unwrap();
+            hex_bytes.push((nibble0 << 4 | nibble1) as u8);
+            index += 2;
+        }
+        let input = String::from_utf8(hex_bytes).unwrap();
+        assert_eq!(
+            input,
+            set2::challenge14::byte_at_a_time_ecb_decryption_hard(&input)
+        )
+    }
 }

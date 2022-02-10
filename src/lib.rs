@@ -235,4 +235,19 @@ mod tests {
             set2::challenge14::byte_at_a_time_ecb_decryption_hard(&input)
         )
     }
+    #[test]
+    fn pkcs7_padding_strip_test() {
+        assert_eq!(
+            Ok("ICE ICE BABY".to_string()),
+            set2::challenge15::pkcs7_padding_strip("ICE ICE BABY\x04\x04\x04\x04")
+        );
+        assert_eq!(
+            Err("invalid padding"),
+            set2::challenge15::pkcs7_padding_strip("ICE ICE BABY\x05\x05\x05\x05")
+        );
+        assert_eq!(
+            Err("invalid padding"),
+            set2::challenge15::pkcs7_padding_strip("ICE ICE BABY\x01\x02\x03\x04")
+        )
+    }
 }

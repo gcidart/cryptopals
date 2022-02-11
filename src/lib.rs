@@ -250,4 +250,8 @@ mod tests {
             set2::challenge15::pkcs7_padding_strip("ICE ICE BABY\x01\x02\x03\x04")
         )
     }
+    #[test]
+    fn cbc_bitflipping_attack_test() {
+        assert_eq!(true, set2::challenge16::cbc_bitflipping_attack())
+    }
 }

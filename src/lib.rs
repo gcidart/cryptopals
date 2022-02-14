@@ -1,5 +1,6 @@
 mod set1;
 mod set2;
+mod set3;
 
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -253,5 +254,25 @@ mod tests {
     #[test]
     fn cbc_bitflipping_attack_test() {
         assert_eq!(true, set2::challenge16::cbc_bitflipping_attack())
+    }
+    #[test]
+    fn cbc_padding_oracle_test() {
+        let file = File::open("src/txt/s3ch17.txt").expect("no such file");
+        let buf = BufReader::new(file);
+        let test_inputs: Vec<String> = buf
+            .lines()
+            .map(|l| l.expect("Could not parse line"))
+            .collect();
+        for input in test_inputs.iter() {
+            let decoded_bytes =
+                set2::challenge14::hex_text_to_hex_bytes(&set1::challenge6::base64_to_hex(&input));
+            let key = set2::challenge11::generate_aes_key();
+            let test_output = String::from_utf8(decoded_bytes).unwrap();
+            let ciphertext = set2::challenge11::encrypt_string_aes128_cbc(&test_output, &key);
+            assert_eq!(
+                test_output,
+                set3::challenge17::cbc_padding_oracle(&ciphertext, &key.as_bytes())
+            )
+        }
     }
 }

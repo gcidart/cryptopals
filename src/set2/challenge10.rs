@@ -15,14 +15,26 @@ pub fn decrypt_aes128_cbc(file: File, key: &str) -> String {
         hex_text_u8.push((nibble1 << 4 | nibble0) as u8);
         index += 2;
     }
-    decrypt_aes128_cbc_hexbytes(&hex_text_u8, key)
+    decrypt_aes128_cbc_hexbytes(&hex_text_u8, &key.as_bytes())
 }
 
 /// using ecb-decrypt function, decrypt bytes via AES-128 in CBC mode under the key
-pub fn decrypt_aes128_cbc_hexbytes(hex_text_u8: &[u8], key: &str) -> String {
+/// returns a string
+pub fn decrypt_aes128_cbc_hexbytes(hex_text_u8: &[u8], key: &[u8]) -> String {
+    let mut output = decrypt_aes128_cbc_hexbytes_into_vec(hex_text_u8, key);
+    output.resize(
+        hex_text_u8.len() - (output[hex_text_u8.len() - 1] as usize),
+        0,
+    );
+    String::from_utf8_lossy(&output).to_string()
+}
+
+/// using ecb-decrypt function, decrypt bytes via AES-128 in CBC mode under the key
+/// returns a vector
+pub fn decrypt_aes128_cbc_hexbytes_into_vec(hex_text_u8: &[u8], key: &[u8]) -> Vec<u8> {
     let cipher = Cipher::aes_128_ecb();
     let iv = b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-    let mut decrypted = Crypter::new(cipher, Mode::Decrypt, &key.as_bytes(), None).unwrap();
+    let mut decrypted = Crypter::new(cipher, Mode::Decrypt, key, None).unwrap();
     let mut output = vec![0 as u8; hex_text_u8.len() + Cipher::aes_128_ecb().block_size()];
 
     let decrypted_result = decrypted.update(&hex_text_u8, &mut output);
@@ -39,12 +51,8 @@ pub fn decrypt_aes128_cbc_hexbytes(hex_text_u8: &[u8], key: &str) -> String {
                 i += 1;
                 j += 1;
             }
-            output.resize(
-                hex_text_u8.len() - (output[hex_text_u8.len() - 1] as usize),
-                0,
-            );
-            String::from_utf8_lossy(&output).to_string()
+            output
         }
-        Err(_) => String::new(),
+        Err(_) => Vec::new(),
     }
 }

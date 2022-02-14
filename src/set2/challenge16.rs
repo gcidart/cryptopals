@@ -33,7 +33,7 @@ fn encryption_oracle(plaintext: &str) -> Vec<u8> {
 ///decrypt under AES-128 CBC and check for ";admin=true;"
 fn decrypt_and_check_for_admin(ciphertext: &[u8]) -> bool {
     let key = KEY.clone();
-    let decrypted = challenge10::decrypt_aes128_cbc_hexbytes(ciphertext, &key);
+    let decrypted = challenge10::decrypt_aes128_cbc_hexbytes(ciphertext, &key.as_bytes());
     //println!("{} ", decrypted);
     decrypted.contains(";admin=true;")
 }

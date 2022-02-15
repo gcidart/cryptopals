@@ -1,9 +1,5 @@
 /// Convert hex to base64
 pub fn hex_to_base64(hex_str: &str) -> String {
-    let base64_alphabet: Vec<char> =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-            .chars()
-            .collect();
     let mut index = 0;
     let nibbles: Vec<_> = hex_str.chars().collect();
     let mut hex_bytes: Vec<u8> = Vec::with_capacity(hex_str.len() / 2);
@@ -13,8 +9,17 @@ pub fn hex_to_base64(hex_str: &str) -> String {
         hex_bytes.push((nibble0 << 4 | nibble1).try_into().unwrap());
         index += 2;
     }
-    index = 0;
-    let mut buf = String::with_capacity(hex_str.len());
+    bytes_to_base64(&hex_bytes)
+}
+
+/// convert slice of bytes to base64 encoded string
+pub fn bytes_to_base64(hex_bytes: &[u8]) -> String {
+    let base64_alphabet: Vec<char> =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+            .chars()
+            .collect();
+    let mut index = 0;
+    let mut buf = String::with_capacity(hex_bytes.len() * 2);
     while index + 3 <= hex_bytes.len() {
         let idx0 = hex_bytes[index] >> 2;
         let idx1 = (hex_bytes[index] & 3) << 4 | (hex_bytes[index + 1] & 0xf0) >> 4;

@@ -275,4 +275,19 @@ mod tests {
             )
         }
     }
+    #[test]
+    fn ctr_test() {
+        let input = "L77na/nrFsKvynd6HzOoG7GHTLXsTVu9qvY/2syLXzhPweyyMTJULu/6/kXX0KSvoOLSFQ==";
+        let key = "YELLOW SUBMARINE";
+        let hex_input =
+            set2::challenge14::hex_text_to_hex_bytes(&set1::challenge6::base64_to_hex(&input));
+        let decrypted_bytes = set3::challenge18::ctr_function(&hex_input, &key.as_bytes(), 0);
+        let test_output = "Yo, VIP Let's kick it Ice, Ice, baby Ice, Ice, baby ";
+        assert_eq!(
+            test_output,
+            String::from_utf8_lossy(&decrypted_bytes).to_string()
+        );
+        let encrypted_bytes = set3::challenge18::ctr_function(&decrypted_bytes, &key.as_bytes(), 0);
+        assert_eq!(input, set1::challenge1::bytes_to_base64(&encrypted_bytes));
+    }
 }

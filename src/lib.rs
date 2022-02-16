@@ -290,4 +290,41 @@ mod tests {
         let encrypted_bytes = set3::challenge18::ctr_function(&decrypted_bytes, &key.as_bytes(), 0);
         assert_eq!(input, set1::challenge1::bytes_to_base64(&encrypted_bytes));
     }
+    #[test]
+    fn break_fixed_nonce_ctr_using_substitutions_test() {
+        let file = File::open("src/txt/s3ch19.txt").expect("no such file");
+        let buf = BufReader::new(file);
+        let test_inputs: Vec<String> = buf
+            .lines()
+            .map(|l| l.expect("Could not parse line"))
+            .collect();
+        let key = set2::challenge11::generate_aes_key();
+        let mut ciphers: Vec<Vec<u8>> = Vec::new();
+        let mut inputs = Vec::new();
+        for input in test_inputs.iter() {
+            let input_bytes =
+                set2::challenge14::hex_text_to_hex_bytes(&set1::challenge6::base64_to_hex(&input));
+            let encrypted_bytes = set3::challenge18::ctr_function(&input_bytes, &key.as_bytes(), 0);
+            ciphers.push(encrypted_bytes);
+            let input = String::from_utf8(input_bytes).unwrap();
+            //println!("{} ", &input);
+            inputs.push(input);
+        }
+        let decrypted_outputs =
+            set3::challenge19::break_fixed_nonce_ctr_using_substitutions(ciphers);
+        let mut wrong_chars = 0;
+        let mut total_chars = 0;
+        for i in 0..inputs.len() {
+            let input_chars: Vec<char> = inputs[i].chars().collect();
+            let output_chars: Vec<char> = decrypted_outputs[i].chars().collect();
+            for j in 0..input_chars.len() {
+                total_chars += 1;
+                if input_chars[j] != output_chars[j] {
+                    wrong_chars += 1;
+                }
+            }
+        }
+        //println!("{} {}", wrong_chars, total_chars);
+        assert_eq!(true, wrong_chars * 10 < total_chars)
+    }
 }

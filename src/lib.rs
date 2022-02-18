@@ -364,4 +364,14 @@ mod tests {
         //println!("{} {}", wrong_chars, total_chars);
         assert_eq!(true, wrong_chars * 50 < total_chars)
     }
+    #[test]
+    fn mt19937_rng_test() {
+        let mut rng = set3::challenge21::MT19937::seed_mt(0);
+        assert_eq!(2357136044, rng.extract_number());
+        assert_eq!(2546248239, rng.extract_number());
+        assert_eq!(3071714933, rng.extract_number());
+        assert_eq!(3626093760, rng.extract_number());
+        assert_eq!(2588848963, rng.extract_number());
+        assert_eq!(3684848379, rng.extract_number());
+    }
 }

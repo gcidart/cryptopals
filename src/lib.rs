@@ -374,4 +374,23 @@ mod tests {
         assert_eq!(2588848963, rng.extract_number());
         assert_eq!(3684848379, rng.extract_number());
     }
+    #[test]
+    fn crack_mt19937_seed_test() {
+        use rand::{thread_rng, Rng};
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let mut rng = thread_rng();
+        let delay1 = rng.gen_range(40..=1000);
+        let mut unix_timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        unix_timestamp += delay1;
+        let mut custom_rng = set3::challenge21::MT19937::seed_mt(unix_timestamp);
+        let pseudo_random_number = custom_rng.extract_number();
+        let delay2 = rng.gen_range(40..=1000);
+        assert_eq!(
+            unix_timestamp,
+            set3::challenge22::crack_mt19937_seed(pseudo_random_number, unix_timestamp + delay2)
+        );
+    }
 }

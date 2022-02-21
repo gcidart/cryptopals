@@ -20,9 +20,9 @@ pub struct MT19937 {
 }
 
 impl MT19937 {
-    pub fn seed_mt(seed: u32) -> MT19937 {
+    pub fn seed_mt(seed: u64) -> MT19937 {
         let mut state = [0u64; N];
-        state[0] = seed as u64;
+        state[0] = seed;
         for i in 1..(N - 1) {
             state[i] = ((state[i - 1] ^ (state[i - 1] >> (W - 2))) * F + (i as u64)) & 0xFFFFFFFF;
         }

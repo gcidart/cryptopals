@@ -393,4 +393,15 @@ mod tests {
             set3::challenge22::crack_mt19937_seed(pseudo_random_number, unix_timestamp + delay2)
         );
     }
+    #[test]
+    fn mt19937_rng_clone_test() {
+        let mut rng = set3::challenge21::MT19937::seed_mt(0);
+        let mut rng_clone = set3::challenge23::MT19937::init();
+        for _ in 0..624 {
+            rng_clone.tap(rng.extract_number());
+        }
+        for _ in 0..1500 {
+            assert_eq!(rng_clone.extract_number(), rng.extract_number());
+        }
+    }
 }

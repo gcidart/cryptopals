@@ -404,4 +404,34 @@ mod tests {
             assert_eq!(rng_clone.extract_number(), rng.extract_number());
         }
     }
+    #[test]
+    fn mt19937_stream_cipher_test() {
+        let input = "YELLOW SUBMARINE";
+        let seed = 27343;
+        let hex_input = input.as_bytes();
+        let encrypted_bytes = set3::challenge24::mt19937_stream_cipher_function(&hex_input, seed);
+        let decrypted_bytes =
+            set3::challenge24::mt19937_stream_cipher_function(&encrypted_bytes, seed);
+        assert_eq!(input, String::from_utf8_lossy(&decrypted_bytes).to_string());
+    }
+    #[test]
+    fn recover_mt19937_stream_cipher_key_test() {
+        use rand::{distributions::Alphanumeric, thread_rng, Rng};
+        let input = "YELLOW SUBMARINE";
+        let num_random_characters = thread_rng().gen_range(5..=10);
+        let s: String = rand::thread_rng()
+            .sample_iter(&Alphanumeric)
+            .take(num_random_characters)
+            .map(char::from)
+            .collect();
+        let mut modified_input = String::with_capacity(input.len() + num_random_characters);
+        modified_input.push_str(&s);
+        modified_input.push_str(input);
+        let seed = 27343;
+        let hex_input = modified_input.as_bytes();
+        let encrypted_bytes = set3::challenge24::mt19937_stream_cipher_function(&hex_input, seed);
+        let recovered_seed =
+            set3::challenge24::recover_mt19937_stream_cipher_key(&encrypted_bytes, &input);
+        assert_eq!(seed, recovered_seed);
+    }
 }

@@ -1,6 +1,7 @@
 mod set1;
 mod set2;
 mod set3;
+mod set4;
 
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -433,5 +434,27 @@ mod tests {
         let recovered_seed =
             set3::challenge24::recover_mt19937_stream_cipher_key(&encrypted_bytes, &input);
         assert_eq!(seed, recovered_seed);
+    }
+    #[test]
+    fn break_random_access_aes_ctr_test() {
+        use rand::{thread_rng, Rng};
+        let file = File::open("src/txt/s4ch25.txt").expect("no such file");
+        let buf = BufReader::new(file);
+        let test_input: String = buf
+            .lines()
+            .map(|l| l.expect("Could not parse line"))
+            .collect::<Vec<String>>()
+            .join("");
+        let key = set2::challenge11::generate_aes_key();
+        let hex_input =
+            set2::challenge14::hex_text_to_hex_bytes(&set1::challenge6::base64_to_hex(&test_input));
+        let nonce = thread_rng().gen_range(5..=u64::MAX);
+        let mut encrypted_bytes =
+            set3::challenge18::ctr_function(&hex_input, &key.as_bytes(), nonce);
+        let plaintext = String::from_utf8_lossy(&hex_input).to_string();
+        let mut ctr_rw = set4::challenge25::RandomAccessCtr::init(&key.as_bytes(), nonce);
+        ctr_rw.break_random_access_aes_ctr(&mut encrypted_bytes);
+        let recovered_plaintext = String::from_utf8_lossy(&encrypted_bytes).to_string();
+        assert_eq!(plaintext, recovered_plaintext);
     }
 }

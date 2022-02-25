@@ -457,4 +457,8 @@ mod tests {
         let recovered_plaintext = String::from_utf8_lossy(&encrypted_bytes).to_string();
         assert_eq!(plaintext, recovered_plaintext);
     }
+    #[test]
+    fn ctr_bitflipping_attack_test() {
+        assert_eq!(true, set4::challenge26::ctr_bitflipping_attack())
+    }
 }
